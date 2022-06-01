@@ -17,9 +17,8 @@ const { response } = require('express');
 app.post('/register', (req, res) => {
     const { firstName, lastName, email, username, password } = req.body;
     if (!email || !password || !firstName || !lastName || !username) {
-        // need to make this an alert
-        return res.json({ error: 'Email, password, first and last name are required' });
-    }
+        return res.status(400).json({ error: 'All fields are required' });
+    };
 
     bcyrpt.hash(password, saltRounds, (err, hash) => {
         models.User.create({
@@ -29,13 +28,13 @@ app.post('/register', (req, res) => {
             username: username,
             password: hash
         }).then((user) => {
-            return res.status(200).json({ success: true, user_id: user.id })
+            return res.status(200).json({ success: true, user_id: user.id });
         }).catch(e => {
             let errors = [];
             e.errors.forEach(error => {
-                errors.push(error.message)
+                errors.push(error.message);
             });
-            return res.status(400).json({ error: errors })
+            return res.status(400).json({ error: errors });
         });
     });
 });
@@ -44,17 +43,17 @@ app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const foundUser = await models.User.findOne({ where: { username: username }, raw: true });
     if (!foundUser) {
-        return res.json({ errors: 'invalid username' });
+        return res.status(400).json({ error: 'invalid username' });
     };
     bcyrpt.compare(password, foundUser.password, (err, match) => {
         if (match) {
-            res.json({ success: true, user_id: foundUser.id })
+            res.status(200).json({ success: true, user_id: foundUser.id });
         } else {
-            res.json({ error: 'Wrong username/password combination' })
+            res.status(400).json({ error: 'Invalid password combination' });
         };
     });
 });
 
 app.listen(PORT, () => {
-    console.log(`app started on ${PORT}`)
+    console.log(`app started on ${PORT}`);
 });
