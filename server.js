@@ -14,9 +14,9 @@ const bcyrpt = require('bcrypt');
 const saltRounds = 10;
 const { response } = require('express');
 
-app.post('/signUp', (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
-    if (!email || !password || !firstName || !lastName) {
+app.post('/register', (req, res) => {
+    const { firstName, lastName, email, username, password } = req.body;
+    if (!email || !password || !firstName || !lastName || !username) {
         // need to make this an alert
         return res.json({ error: 'Email, password, first and last name are required' });
     }
@@ -26,6 +26,7 @@ app.post('/signUp', (req, res) => {
             firstName: firstName,
             lastName: lastName,
             email: email,
+            username: username,
             password: hash
         }).then((user) => {
             return res.status(200).json({ success: true, user_id: user.id })
