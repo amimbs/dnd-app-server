@@ -40,17 +40,17 @@ app.post('/register', (req, res) => {
     });
 });
 
-app.post('/logIn', async (req, res) => {
-    const { email, password } = req.body;
-    const foundUser = await models.User.findOne({ where: { email: email }, raw: true });
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    const foundUser = await models.User.findOne({ where: { username: username }, raw: true });
     if (!foundUser) {
-        return res.json({ errors: 'invalid email' });
+        return res.json({ errors: 'invalid username' });
     };
     bcyrpt.compare(password, foundUser.password, (err, match) => {
         if (match) {
             res.json({ success: true, user_id: foundUser.id })
         } else {
-            res.json({ error: 'Incorrect Password' })
+            res.json({ error: 'Wrong username/password combination' })
         };
     });
 });
