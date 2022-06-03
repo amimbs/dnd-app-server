@@ -63,6 +63,14 @@ app.post('/register', (req, res) => {
     });
 });
 
+app.get('/login', (req, res) => {
+    if (req.session.user) {
+        res.send({loggedIn: true, user: req.session.user})
+    } else {
+        res.send({loggedIn: false});
+    };
+});
+
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const foundUser = await models.User.findOne({ where: { username: username }, raw: true });
@@ -71,7 +79,11 @@ app.post('/login', async (req, res) => {
     };
     bcyrpt.compare(password, foundUser.password, (err, match) => {
         if (match) {
+            //not sure if I implemented this correctly
+            req.session.user = foundUser;
+            // console.log('this is the session: ' + req.session.user)
             res.status(200).json({ success: true, user_id: foundUser.id });
+            // console.log(foundUser)
         } else {
             res.status(400).json({ error: 'Invalid password combination' });
         };
