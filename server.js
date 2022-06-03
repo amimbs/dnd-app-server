@@ -5,14 +5,38 @@ const cors = require('cors');
 const PORT = process.env.PORT || 3001;
 // heroku gives a port that the app runs on so we set it equal to the environments process to ensure it deploys correctly
 
-// in package.json change the main to the server and add the nodemon script
-app.use(express.json());
-app.use(cors());
 const models = require('./models');
 const user = require('./models/user')
 const bcyrpt = require('bcrypt');
 const saltRounds = 10;
 const { response } = require('express');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+
+// in package.json change the main to the server and add the nodemon script
+app.use(express.json());
+app.use(
+    cors({
+        origin: ["http://localhost:3000"],
+        methods: ["GET", "POST"],
+        credentials: true
+    })
+);
+
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session(
+    {
+        key: "userId",
+        secret: "this154rea11Yl0n653cr4TlikeOMG!itssobigand10n6!&tHICk",
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            expires: 60 * 60 * 24,
+        },
+    })
+);
 
 app.post('/register', (req, res) => {
     const { firstName, lastName, email, username, password } = req.body;
