@@ -7,3 +7,4 @@
 - npm install bcrypt# dnd-app-server
 - npm install cors
 - npm install express-session body-parser cookie-parser
+- npm install jsonwebtoken
